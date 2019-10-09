@@ -1,27 +1,43 @@
 #!/usr/bin/env python
 from random import randint
 from flask import jsonify
+from flask_restful import Api
+from models.tweet import Tweet
 from services import config
 from services import registry
 from models.database import db
 from models.user import User
+from resources.user import UserResource
 
 
 service = registry.get("application_service", config)
 app = service.get_app()
+api = Api(app)
 
 
-@app.route('/api/users', methods=['GET'])
-def get_users():
+@app.route('/api/tweets', methods=['GET'])
+def get_tweets():
     n = randint(100, 100*100)
     user = User(
         username='guest{}'.format(n),
         email='guest{}@example.com'.format(n),
     )
     db.session.add(user)
+    tweet = Tweet(
+        content='Some shitty tweet',
+        tag='shit',
+        user=user,
+    )
+    db.session.add(tweet)
     db.session.commit()
-    users = User.query.all()
-    return jsonify({'users': [repr(x) for x in users]})
+    tweets = Tweet.query.all()
+    return jsonify({'tweets': [repr(t) for t in tweets]})
+
+
+#@app.route('/api/user/<username>', methods=['GET'])
+def get_user(username):
+    tweets = Tweet.query.all()
+    return jsonify({'tweets': [repr(t) for t in tweets]})
 
 
 def run_app():
@@ -31,6 +47,8 @@ def run_app():
         db.session.commit()
     app.run(debug=True)
 
+
+api.add_resource(UserResource, '/api/user/<user_id>')
 
 if __name__ == '__main__':
     run_app()
