@@ -8,6 +8,7 @@ from services import registry
 from models.database import db
 from models.user import User
 from resources.user import UserResource
+from resources.tweet import TweetResource
 
 
 service = registry.get("application_service", config)
@@ -34,12 +35,6 @@ def get_tweets():
     return jsonify({'tweets': [repr(t) for t in tweets]})
 
 
-#@app.route('/api/user/<username>', methods=['GET'])
-def get_user(username):
-    tweets = Tweet.query.all()
-    return jsonify({'tweets': [repr(t) for t in tweets]})
-
-
 def run_app():
     db.init_app(app)
     with app.app_context():
@@ -49,6 +44,7 @@ def run_app():
 
 
 api.add_resource(UserResource, '/api/user/<user_id>')
+api.add_resource(TweetResource, '/api/tweet/<tweet_id>')
 
 if __name__ == '__main__':
     run_app()
