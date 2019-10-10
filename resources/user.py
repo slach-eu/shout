@@ -2,6 +2,7 @@ from flask import request
 from flask_restful import Resource
 from models.database import db
 from models.user import User
+from models.helpers import get_password_hash
 
 
 class UserResource(Resource):
@@ -21,6 +22,7 @@ class UsersResource(Resource):
         user = User(
             username=content['username'],
             email=content['email'],
+            password=get_password_hash(content['password']),
         )
         db.session.add(user)
         db.session.commit()

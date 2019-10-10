@@ -19,6 +19,7 @@ class UserTest(TestCase):
         data = dict(
             username='guest{}'.format(n),
             email='guest{}@example.com'.format(n),
+            password='pwguest{}'.format(n),
         )
         req = post(endpoint, json=data)
         self.assertTrue(req.status_code, 200)
