@@ -1,4 +1,4 @@
-from random import randint
+from flask import request
 from flask_restful import Resource
 from models.database import db
 from models.user import User
@@ -14,10 +14,13 @@ class UserResource(Resource):
 class UsersResource(Resource):
 
     def post(self):
-        n = randint(100, 100 * 100)
+        if not request.is_json:
+            raise Exception()
+
+        content = request.get_json()
         user = User(
-            username='guest{}'.format(n),
-            email='guest{}@example.com'.format(n),
+            username=content['username'],
+            email=content['email'],
         )
         db.session.add(user)
         db.session.commit()
