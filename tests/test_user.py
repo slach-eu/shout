@@ -25,3 +25,27 @@ class UserTest(TestCase):
         self.assertTrue(req.status_code, 200)
         response = req.json()
         self.assertIn("user", response.keys())
+
+
+class UserAuthorizationTest(TestCase):
+
+    def setUp(self):
+        endpoint = get_api_endpoint('/user')
+        data = dict(
+            username='test',
+            email='test@example.com',
+            password='pwtest',
+        )
+        req = post(endpoint, json=data)
+        self.assertTrue(req.status_code, 200)
+
+    def test_can_create_a_user_authorization(self):
+        endpoint = get_api_endpoint('/user/auth')
+        data = dict(
+            username='test',
+            password='pwtest',
+        )
+        req = post(endpoint, json=data)
+        self.assertTrue(req.status_code, 200)
+        response = req.json()
+        self.assertIn("auth", response.keys())

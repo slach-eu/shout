@@ -4,6 +4,7 @@ from services import config
 from services import registry
 from models.database import db
 from resources.user import UserResource, UsersResource
+from resources.user import UserAuthorizationsResource
 from resources.tweet import TweetResource
 
 
@@ -15,6 +16,7 @@ app = service.get_app()
 api = Api(app)
 api.add_resource(UsersResource, '/api/user')
 api.add_resource(UserResource, '/api/user/<user_id>')
+api.add_resource(UserAuthorizationsResource, '/api/user/auth')
 api.add_resource(TweetResource, '/api/tweet/<tweet_id>')
 
 
