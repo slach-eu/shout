@@ -3,7 +3,7 @@ from flask_restful import Api
 from services import config
 from services import registry
 from models.database import db
-from resources.user import UserResource
+from resources.user import UserResource, UsersResource
 from resources.tweet import TweetResource
 
 
@@ -13,6 +13,7 @@ app = service.get_app()
 
 # configure api
 api = Api(app)
+api.add_resource(UsersResource, '/api/user')
 api.add_resource(UserResource, '/api/user/<user_id>')
 api.add_resource(TweetResource, '/api/tweet/<tweet_id>')
 
