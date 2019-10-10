@@ -15,8 +15,15 @@ class UserAuthorization(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     token = db.Column(db.String(8), unique=True, nullable=False)
 
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), unique=True, nullable=False)
     user = db.relationship('User', backref=db.backref('auth', lazy=True))
 
     def __repr__(self):
         return "<Authorization for user {}>".format(self.user_id)
+
+    def dict(self):
+        return dict(
+            id=self.id,
+            user_id=self.user_id,
+            token=self.token,
+        )

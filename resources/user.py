@@ -49,10 +49,12 @@ class UserAuthorizationsResource(Resource):
         if user.password != password:
             raise Exception("Invalid password")
 
+        UserAuthorization.query.filter_by(user=user).delete()
+
         auth = UserAuthorization(
             user_id=user.id,
             token=generate_random_token(),
         )
         db.session.add(auth)
         db.session.commit()
-        return {'auth': repr(auth)}
+        return {'auth': auth.dict()}
