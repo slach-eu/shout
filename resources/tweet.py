@@ -1,5 +1,5 @@
 from flask import request
-from flask_restful import Resource
+from flask_restful import Resource, abort
 from sqlalchemy.orm.exc import NoResultFound
 
 from models.tweet import Tweet
@@ -27,22 +27,26 @@ class TweetsResource(Resource):
 
     def post(self):
         if not request.is_json:
-            raise Exception()
+            abort(400, message="Could not parse JSON")
 
         content = request.get_json()
 
         try:
-            user = User.query.filter_by(username=content['username']).one()
+            user = User.query.filter_by(
+                username=content['username']
+            ).one()
         except NoResultFound as e:
-            raise Exception("No user found")
+            abort(401, message="No user found")
 
         try:
-            auth = UserAuthorization.query.filter_by(user_id=user.id).one()
+            auth = UserAuthorization.query.filter_by(
+                user_id=user.id
+            ).one()
         except NoResultFound as e:
-            raise Exception("Request unauthorized")
+            abort(401, message="No user authorization found")
 
         if auth.token != content['token']:
-            raise Exception("Invalid token")
+            abort(403, message="Invalid token found")
 
         tweet = Tweet(
             user=user,
@@ -53,3 +57,26 @@ class TweetsResource(Resource):
         db.session.commit()
 
         return {'tweet': repr(tweet)}
+
+
+class TweetsTagResource(Resource):
+
+    def get(self, tag, limit=10):
+        try:
+            page = int(request.args.get("page", 1))
+        except ValueError as e:
+            abort(400, details="Could not parse page argument")
+
+        query = Tweet.query.filter_by(tag=tag)
+        count = query.count()
+
+        if page:
+            query = query.offset(limit*page)
+
+        tweets = query.limit(limit).all()
+
+        return {
+            'tweets': [repr(t) for t in tweets],
+            'count': count,
+            'page': page,
+        }
