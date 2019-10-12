@@ -63,17 +63,14 @@ class TweetsTagResource(Resource):
 
     def get(self, tag, limit=10):
         try:
-            page = int(request.args.get("page", 1))
+            page = int(request.args.get("page", 1)) - 1
         except ValueError as e:
             abort(400, details="Could not parse page argument")
 
         query = Tweet.query.filter_by(tag=tag)
         count = query.count()
 
-        if page:
-            query = query.offset(limit*page)
-
-        tweets = query.limit(limit).all()
+        tweets = query.limit(limit).offset(limit*page).all()
 
         return {
             'tweets': [repr(t) for t in tweets],
