@@ -1,7 +1,7 @@
+from datetime import datetime
 from flask import request
 from flask_restful import Resource, abort
 from sqlalchemy.orm.exc import NoResultFound
-
 from models.tweet import Tweet
 from models.user import User, UserAuthorization
 from models.database import db
@@ -76,4 +76,30 @@ class TweetsTagResource(Resource):
             'tweets': [repr(t) for t in tweets],
             'count': count,
             'page': page,
+        }
+
+
+class TweetsByDateResource(Resource):
+
+    def get(self, begin, end, limit=10):
+        try:
+            page = int(request.args.get("page", 1)) - 1
+        except ValueError as e:
+            abort(400, details="Could not parse page argument")
+
+        begin_date = datetime.strptime(begin, "%Y-%m-%d")
+        end_date = datetime.strptime(end, "%Y-%m-%d")
+        query = Tweet.query\
+            .filter(Tweet.created_at >= begin_date)\
+            .filter(Tweet.created_at <= end_date)
+        count = query.count()
+
+        tweets = query.limit(limit).offset(limit*page).all()
+
+        return {
+            'tweets': [repr(t) for t in tweets],
+            'count': count,
+            'page': page,
+            'begin': begin,
+            'end': end,
         }

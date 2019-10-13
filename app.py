@@ -7,6 +7,7 @@ from resources.user import UserResource, UsersResource
 from resources.user import UserAuthorizationsResource
 from resources.tweet import TweetResource, TweetsResource
 from resources.tweet import TweetsTagResource
+from resources.tweet import TweetsByDateResource
 
 
 # configure application
@@ -21,6 +22,7 @@ api.add_resource(UserAuthorizationsResource, '/api/user/auth')
 api.add_resource(TweetsResource, '/api/tweet')
 api.add_resource(TweetResource, '/api/tweet/<tweet_id>')
 api.add_resource(TweetsTagResource, '/api/tweet/tag/<tag>')
+api.add_resource(TweetsByDateResource, '/api/tweet/by_date/<begin>/<end>')
 
 
 if __name__ == '__main__':
