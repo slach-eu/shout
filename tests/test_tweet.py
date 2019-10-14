@@ -38,3 +38,29 @@ class TweetTest(TestCase):
         self.assertTrue(req.status_code, 200)
         response = req.json()
         self.assertIn("tweet", response.keys())
+
+
+class TweetByTagTest(TestCase):
+
+    def test_can_obtain_tweets_by_tag(self):
+        endpoint = get_api_endpoint('/tweet/tag/{}'.format('lorem'))
+        req = get(endpoint)
+        self.assertTrue(req.status_code, 200)
+        response = req.json()
+        self.assertIn("tweets", response.keys())
+        self.assertIn("page", response.keys())
+        self.assertIn("count", response.keys())
+
+
+class TweetByDate(TestCase):
+
+    def test_can_obtain_tweets_by_date(self):
+        endpoint = get_api_endpoint(
+            '/tweet/by_date/{}/{}'.format('2000-01-01', '2222-02-02')
+        )
+        req = get(endpoint)
+        self.assertTrue(req.status_code, 200)
+        response = req.json()
+        self.assertIn("tweets", response.keys())
+        self.assertIn("page", response.keys())
+        self.assertIn("count", response.keys())
